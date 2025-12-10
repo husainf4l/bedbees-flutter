@@ -1,0 +1,936 @@
+import 'package:flutter/material.dart';
+import '../../core/theme/bedbees_colors.dart';
+import '../../core/theme/bedbees_text_styles.dart';
+import '../../core/widgets/bedbees_components.dart';
+
+class AITripPlannerPage extends StatefulWidget {
+  const AITripPlannerPage({super.key});
+
+  @override
+  State<AITripPlannerPage> createState() => _AITripPlannerPageState();
+}
+
+class _AITripPlannerPageState extends State<AITripPlannerPage> with SingleTickerProviderStateMixin {
+  String _selectedTripType = 'Solo';
+  String _selectedDuration = '1 week';
+  double _budgetValue = 2000;
+  int _travelersCount = 1;
+  DateTimeRange? _selectedDateRange;
+  final Set<String> _selectedInterests = {};
+  final TextEditingController _destinationController = TextEditingController();
+  final TextEditingController _notesController = TextEditingController();
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+
+  final List<Map<String, dynamic>> _interests = [
+    {'label': 'Beach', 'icon': '🏖️', 'color': BedbeesColors.primaryBlue},
+    {'label': 'Adventure', 'icon': '🏔️', 'color': BedbeesColors.sunshineYellow},
+    {'label': 'Culture', 'icon': '🏛️', 'color': BedbeesColors.primaryBlue},
+    {'label': 'Food', 'icon': '🍽️', 'color': BedbeesColors.successGreen},
+    {'label': 'Shopping', 'icon': '🛍️', 'color': BedbeesColors.sunshineYellow},
+    {'label': 'Art', 'icon': '🎨', 'color': BedbeesColors.primaryBlue},
+    {'label': 'Nightlife', 'icon': '🌃', 'color': BedbeesColors.darkText},
+    {'label': 'Wellness', 'icon': '🧘', 'color': BedbeesColors.successGreen},
+    {'label': 'Nature', 'icon': '🌿', 'color': BedbeesColors.successGreen},
+    {'label': 'Photography', 'icon': '📸', 'color': BedbeesColors.primaryBlue},
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _destinationController.dispose();
+    _notesController.dispose();
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: BedbeesColors.screenBackground,
+      body: SafeArea(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: CustomScrollView(
+            slivers: [
+              // Enhanced Header with Gradient
+              SliverToBoxAdapter(
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        BedbeesColors.primaryBlue,
+                        BedbeesColors.primaryBlue.withOpacity(0.8),
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: BedbeesColors.primaryBlue.withOpacity(0.3),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.arrow_back_rounded,
+                                color: BedbeesColors.white,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.auto_awesome_rounded,
+                                      color: BedbeesColors.sunshineYellow,
+                                      size: 28,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'AI Trip Planner',
+                                      style: BedbeesTextStyles.h1.copyWith(
+                                        color: BedbeesColors.white,
+                                        fontSize: 26,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Personalized itineraries powered by AI',
+                                  style: BedbeesTextStyles.bodyMedium.copyWith(
+                                    color: BedbeesColors.white.withOpacity(0.9),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      // Stats Row
+                      Row(
+                        children: [
+                          _buildStatBadge('10K+', 'Trips Planned'),
+                          const SizedBox(width: 12),
+                          _buildStatBadge('4.9★', 'Rating'),
+                          const SizedBox(width: 12),
+                          _buildStatBadge('150+', 'Destinations'),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            // Form Content
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Destination Section
+                    _buildSectionHeader('Where to?', Icons.location_on_rounded),
+                    const SizedBox(height: 12),
+                    BedbeesTextField(
+                      controller: _destinationController,
+                      label: 'Destination',
+                      hint: 'e.g., Paris, Bali, Tokyo, New York...',
+                      prefixIcon: const Icon(Icons.search_rounded, color: BedbeesColors.primaryBlue),
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // Date Range Picker
+                    _buildSectionHeader('When?', Icons.calendar_today_rounded),
+                    const SizedBox(height: 12),
+                    _buildDateRangePicker(),
+
+                    const SizedBox(height: 28),
+
+                    // Trip Type
+                    _buildSectionHeader('Trip Type', Icons.people_rounded),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(child: _buildTripTypeChip('Solo', Icons.person_rounded)),
+                        const SizedBox(width: 10),
+                        Expanded(child: _buildTripTypeChip('Couple', Icons.favorite_rounded)),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(child: _buildTripTypeChip('Family', Icons.family_restroom_rounded)),
+                        const SizedBox(width: 10),
+                        Expanded(child: _buildTripTypeChip('Friends', Icons.groups_rounded)),
+                      ],
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // Travelers Count
+                    _buildSectionHeader('Number of Travelers', Icons.group_add_rounded),
+                    const SizedBox(height: 12),
+                    _buildTravelersCounter(),
+
+                    const SizedBox(height: 28),
+
+                    // Budget Slider
+                    _buildSectionHeader('Budget per Person', Icons.attach_money_rounded),
+                    const SizedBox(height: 12),
+                    _buildBudgetSlider(),
+
+                    const SizedBox(height: 28),
+
+                    // Duration
+                    _buildSectionHeader('Trip Duration', Icons.schedule_rounded),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: [
+                        _buildDurationChip('Weekend'),
+                        _buildDurationChip('3-5 days'),
+                        _buildDurationChip('1 week'),
+                        _buildDurationChip('2 weeks'),
+                        _buildDurationChip('1 month'),
+                      ],
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // Interests
+                    _buildSectionHeader('What interests you?', Icons.interests_rounded),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Select all that apply',
+                      style: BedbeesTextStyles.caption.copyWith(
+                        color: BedbeesColors.greyText,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: _interests.map((interest) {
+                        return _buildSelectableInterestChip(
+                          interest['label'] as String,
+                          interest['icon'] as String,
+                          interest['color'] as Color,
+                        );
+                      }).toList(),
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // Additional Notes
+                    _buildSectionHeader('Special Requests', Icons.note_add_rounded),
+                    const SizedBox(height: 12),
+                    BedbeesTextField(
+                      controller: _notesController,
+                      label: 'Additional Notes',
+                      hint: 'e.g., Accessible places, romantic spots, kid-friendly...',
+                      maxLines: 4,
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Generate Button with Animation
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0.0, end: 1.0),
+                      duration: const Duration(milliseconds: 600),
+                      curve: Curves.elasticOut,
+                      builder: (context, value, child) {
+                        return Transform.scale(
+                          scale: value,
+                          child: child,
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          gradient: LinearGradient(
+                            colors: [
+                              BedbeesColors.primaryBlue,
+                              BedbeesColors.primaryBlue.withOpacity(0.8),
+                            ],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: BedbeesColors.primaryBlue.withOpacity(0.4),
+                              blurRadius: 20,
+                              offset: const Offset(0, 10),
+                            ),
+                          ],
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: _generateTrip,
+                            borderRadius: BorderRadius.circular(16),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 18),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.auto_awesome_rounded,
+                                    color: BedbeesColors.white,
+                                    size: 24,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'Generate My Perfect Trip',
+                                    style: BedbeesTextStyles.h3.copyWith(
+                                      color: BedbeesColors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Info Cards
+                    _buildInfoCard(
+                      icon: Icons.wb_sunny_rounded,
+                      title: 'AI-Powered Planning',
+                      description: 'Get personalized recommendations based on your preferences',
+                      color: BedbeesColors.sunshineYellow,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildInfoCard(
+                      icon: Icons.map_rounded,
+                      title: 'Detailed Itinerary',
+                      description: 'Day-by-day plans with activities, dining, and accommodations',
+                      color: BedbeesColors.primaryBlue,
+                    ),
+                    const SizedBox(height: 12),
+                    _buildInfoCard(
+                      icon: Icons.savings_rounded,
+                      title: 'Budget Optimization',
+                      description: 'Smart suggestions to maximize your travel experience',
+                      color: BedbeesColors.successGreen,
+                    ),
+
+                    const SizedBox(height: 100),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatBadge(String value, String label) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.3),
+          ),
+        ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: BedbeesTextStyles.h3.copyWith(
+                color: BedbeesColors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: BedbeesTextStyles.caption.copyWith(
+                color: BedbeesColors.white.withOpacity(0.8),
+                fontSize: 10,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, IconData icon) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            gradient: BedbeesColors.blueGradient,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            icon,
+            color: BedbeesColors.white,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: BedbeesTextStyles.h3.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateRangePicker() {
+    return GestureDetector(
+      onTap: () async {
+        final picked = await showDateRangePicker(
+          context: context,
+          firstDate: DateTime.now(),
+          lastDate: DateTime.now().add(const Duration(days: 365)),
+          builder: (context, child) {
+            return Theme(
+              data: Theme.of(context).copyWith(
+                colorScheme: const ColorScheme.light(
+                  primary: BedbeesColors.primaryBlue,
+                  onPrimary: BedbeesColors.white,
+                  surface: BedbeesColors.white,
+                  onSurface: BedbeesColors.darkText,
+                ),
+              ),
+              child: child!,
+            );
+          },
+        );
+        if (picked != null) {
+          setState(() {
+            _selectedDateRange = picked;
+          });
+        }
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: BedbeesColors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: _selectedDateRange != null
+                ? BedbeesColors.primaryBlue
+                : BedbeesColors.lightGrey,
+          ),
+          boxShadow: BedbeesColors.softShadow,
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.event_rounded,
+              color: _selectedDateRange != null
+                  ? BedbeesColors.primaryBlue
+                  : BedbeesColors.greyText,
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _selectedDateRange != null
+                        ? '${_selectedDateRange!.start.day}/${_selectedDateRange!.start.month}/${_selectedDateRange!.start.year} - ${_selectedDateRange!.end.day}/${_selectedDateRange!.end.month}/${_selectedDateRange!.end.year}'
+                        : 'Select travel dates',
+                    style: BedbeesTextStyles.bodyMedium.copyWith(
+                      color: _selectedDateRange != null
+                          ? BedbeesColors.darkText
+                          : BedbeesColors.greyText,
+                      fontWeight: _selectedDateRange != null
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                    ),
+                  ),
+                  if (_selectedDateRange != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      '${_selectedDateRange!.duration.inDays} days',
+                      style: BedbeesTextStyles.caption.copyWith(
+                        color: BedbeesColors.primaryBlue,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16,
+              color: BedbeesColors.greyText,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTravelersCounter() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: BedbeesColors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: BedbeesColors.softShadow,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Travelers',
+            style: BedbeesTextStyles.bodyLarge.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Row(
+            children: [
+              _buildCounterButton(
+                icon: Icons.remove_rounded,
+                onPressed: () {
+                  if (_travelersCount > 1) {
+                    setState(() {
+                      _travelersCount--;
+                    });
+                  }
+                },
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                decoration: BoxDecoration(
+                  color: BedbeesColors.primaryBlue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  '$_travelersCount',
+                  style: BedbeesTextStyles.h2.copyWith(
+                    color: BedbeesColors.primaryBlue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              _buildCounterButton(
+                icon: Icons.add_rounded,
+                onPressed: () {
+                  setState(() {
+                    _travelersCount++;
+                  });
+                },
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCounterButton({required IconData icon, required VoidCallback onPressed}) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          gradient: BedbeesColors.blueGradient,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: BedbeesColors.softShadow,
+        ),
+        child: Icon(
+          icon,
+          color: BedbeesColors.white,
+          size: 20,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBudgetSlider() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: BedbeesColors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: BedbeesColors.softShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '\$${_budgetValue.toInt()}',
+                style: BedbeesTextStyles.h2.copyWith(
+                  color: BedbeesColors.primaryBlue,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: _getBudgetColor().withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  _getBudgetLabel(),
+                  style: BedbeesTextStyles.caption.copyWith(
+                    color: _getBudgetColor(),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SliderTheme(
+            data: SliderThemeData(
+              activeTrackColor: _getBudgetColor(),
+              inactiveTrackColor: BedbeesColors.lightGrey,
+              thumbColor: _getBudgetColor(),
+              overlayColor: _getBudgetColor().withOpacity(0.2),
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
+              overlayShape: const RoundSliderOverlayShape(overlayRadius: 24),
+            ),
+            child: Slider(
+              value: _budgetValue,
+              min: 500,
+              max: 10000,
+              divisions: 38,
+              onChanged: (value) {
+                setState(() {
+                  _budgetValue = value;
+                });
+              },
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '\$500',
+                style: BedbeesTextStyles.caption.copyWith(
+                  color: BedbeesColors.greyText,
+                ),
+              ),
+              Text(
+                '\$10,000',
+                style: BedbeesTextStyles.caption.copyWith(
+                  color: BedbeesColors.greyText,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getBudgetColor() {
+    if (_budgetValue < 2000) return BedbeesColors.successGreen;
+    if (_budgetValue < 5000) return BedbeesColors.primaryBlue;
+    return BedbeesColors.sunshineYellow;
+  }
+
+  String _getBudgetLabel() {
+    if (_budgetValue < 2000) return 'Budget';
+    if (_budgetValue < 5000) return 'Moderate';
+    return 'Luxury';
+  }
+
+  Widget _buildDurationChip(String duration) {
+    final isSelected = _selectedDuration == duration;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedDuration = duration;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? BedbeesColors.primaryBlue : BedbeesColors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? BedbeesColors.primaryBlue : BedbeesColors.lightGrey,
+            width: isSelected ? 2 : 1,
+          ),
+          boxShadow: isSelected ? BedbeesColors.primaryButtonShadow : BedbeesColors.softShadow,
+        ),
+        child: Text(
+          duration,
+          style: BedbeesTextStyles.bodyMedium.copyWith(
+            color: isSelected ? BedbeesColors.white : BedbeesColors.darkText,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+    final isSelected = _selectedTripType == type;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedTripType = type;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? BedbeesColors.primaryBlue : BedbeesColors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? BedbeesColors.primaryBlue : BedbeesColors.lightGrey,
+          ),
+          boxShadow: isSelected ? BedbeesColors.primaryButtonShadow : BedbeesColors.softShadow,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? BedbeesColors.white : BedbeesColors.primaryBlue,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              type,
+              style: BedbeesTextStyles.label.copyWith(
+                color: isSelected ? BedbeesColors.white : BedbeesColors.darkText,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBudgetChip(String budget, String symbol, Color color) {
+    final isSelected = _selectedBudget == budget;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedBudget = budget;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        decoration: BoxDecoration(
+          color: isSelected ? color : BedbeesColors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? color : BedbeesColors.lightGrey,
+          ),
+          boxShadow: isSelected ? BedbeesColors.mediumShadow : BedbeesColors.softShadow,
+        ),
+        child: Column(
+          children: [
+            Text(
+              symbol,
+              style: BedbeesTextStyles.h3.copyWith(
+                color: isSelected ? BedbeesColors.white : color,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              budget,
+              style: BedbeesTextStyles.caption.copyWith(
+                color: isSelected ? BedbeesColors.white : BedbeesColors.darkText,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInterestChip(String interest) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: BedbeesColors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: BedbeesColors.lightGrey,
+        ),
+        boxShadow: BedbeesColors.softShadow,
+      ),
+      child: Text(
+        interest,
+        style: BedbeesTextStyles.bodySmall.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDurationButton(String duration) {
+    return Text(
+      duration,
+      style: BedbeesTextStyles.bodySmall.copyWith(
+        color: BedbeesColors.darkText,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+
+  void _generateTrip() {
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Center(
+        child: Container(
+          margin: const EdgeInsets.all(40),
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: BedbeesColors.white,
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: BedbeesColors.mediumShadow,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: BedbeesColors.blueGradient,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.auto_awesome_rounded,
+                  color: BedbeesColors.white,
+                  size: 48,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Creating Your Perfect Trip',
+                style: BedbeesTextStyles.h2,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Our AI is analyzing your preferences...',
+                style: BedbeesTextStyles.bodyMedium.copyWith(
+                  color: BedbeesColors.greyText,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(BedbeesColors.primaryBlue),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    // Simulate API call
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.pop(context); // Close loading dialog
+      _showSuccessDialog();
+    });
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.all(32),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: BedbeesColors.successGreen.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.check_circle_rounded,
+                color: BedbeesColors.successGreen,
+                size: 64,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Trip Created!',
+              style: BedbeesTextStyles.h2,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Your personalized itinerary is ready. Check your trips to view details.',
+              style: BedbeesTextStyles.bodyMedium.copyWith(
+                color: BedbeesColors.greyText,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: BedbeesButton(
+                text: 'View Itinerary',
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
