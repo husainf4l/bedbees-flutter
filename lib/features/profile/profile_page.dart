@@ -6,8 +6,15 @@ import '../../core/theme/bedbees_text_styles.dart';
 import '../../core/widgets/bedbees_components.dart';
 import '../../services/auth/auth_service.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  bool _isEditing = false;
 
   @override
   Widget build(BuildContext context) {
@@ -37,29 +44,43 @@ class ProfilePage extends StatelessWidget {
                         ),
                         Row(
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.edit_outlined,
-                                color: BedbeesColors.white,
-                                size: 20,
+                            InkWell(
+                              onTap: () {
+                                setState(() => _isEditing = !_isEditing);
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: _isEditing
+                                      ? BedbeesColors.sunshineYellow
+                                      : Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  Icons.edit_outlined,
+                                  color: _isEditing
+                                      ? BedbeesColors.darkText
+                                      : BedbeesColors.white,
+                                  size: 20,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: const Icon(
-                                Icons.settings_rounded,
-                                color: BedbeesColors.white,
-                                size: 20,
+                            InkWell(
+                              onTap: () {
+                                // Navigate to settings
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(
+                                  Icons.settings_rounded,
+                                  color: BedbeesColors.white,
+                                  size: 20,
+                                ),
                               ),
                             ),
                           ],
@@ -242,6 +263,42 @@ class ProfilePage extends StatelessWidget {
                     () {},
                   ),
 
+                  const SizedBox(height: 24),
+                  Text(
+                    'LOYALTY & REWARDS',
+                    style: BedbeesTextStyles.caption.copyWith(
+                      color: BedbeesColors.greyText,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildLoyaltyCard(),
+
+                  const SizedBox(height: 24),
+                  Text(
+                    'ACHIEVEMENTS',
+                    style: BedbeesTextStyles.caption.copyWith(
+                      color: BedbeesColors.greyText,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildAchievements(),
+
+                  const SizedBox(height: 24),
+                  Text(
+                    'TRAVEL PREFERENCES',
+                    style: BedbeesTextStyles.caption.copyWith(
+                      color: BedbeesColors.greyText,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildPreferences(),
+
                   const SizedBox(height: 32),
                   // Logout Button
                   SizedBox(
@@ -302,24 +359,400 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildStat(String value, String label) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: BedbeesTextStyles.h2.copyWith(
-            color: BedbeesColors.white,
-            fontWeight: FontWeight.bold,
-          ),
+  Widget _buildLoyaltyCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFFFFD700), // Gold
+            Color(0xFFFFA500), // Orange
+          ],
         ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: BedbeesTextStyles.bodySmall.copyWith(
-            color: BedbeesColors.white.withOpacity(0.9),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFFFFD700).withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
           ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Gold Member',
+                    style: BedbeesTextStyles.h2.copyWith(
+                      color: BedbeesColors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Member since 2023',
+                    style: BedbeesTextStyles.bodySmall.copyWith(
+                      color: BedbeesColors.white.withOpacity(0.9),
+                    ),
+                  ),
+                ],
+              ),
+              const Icon(
+                Icons.workspace_premium_rounded,
+                color: BedbeesColors.white,
+                size: 48,
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Points Balance',
+                      style: BedbeesTextStyles.bodySmall.copyWith(
+                        color: BedbeesColors.white.withOpacity(0.9),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '2,450',
+                      style: BedbeesTextStyles.h1.copyWith(
+                        color: BedbeesColors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: BedbeesColors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'Redeem',
+                    style: BedbeesTextStyles.bodyMedium.copyWith(
+                      color: const Color(0xFFFFA500),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Progress to next level
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Progress to Platinum',
+                    style: BedbeesTextStyles.bodySmall.copyWith(
+                      color: BedbeesColors.white.withOpacity(0.9),
+                    ),
+                  ),
+                  Text(
+                    '550 points to go',
+                    style: BedbeesTextStyles.bodySmall.copyWith(
+                      color: BedbeesColors.white.withOpacity(0.9),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: LinearProgressIndicator(
+                  value: 0.65,
+                  backgroundColor: Colors.white.withOpacity(0.3),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    BedbeesColors.white,
+                  ),
+                  minHeight: 8,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAchievements() {
+    final achievements = [
+      {
+        'icon': Icons.flight_takeoff_rounded,
+        'title': 'Frequent Flyer',
+        'description': '10+ trips completed',
+        'color': const Color(0xFF0EA5E9),
+        'unlocked': true,
+      },
+      {
+        'icon': Icons.star_rounded,
+        'title': 'Top Reviewer',
+        'description': '50+ reviews written',
+        'color': const Color(0xFFFFD700),
+        'unlocked': true,
+      },
+      {
+        'icon': Icons.explore_rounded,
+        'title': 'Explorer',
+        'description': 'Visited 5 countries',
+        'color': const Color(0xFF10B981),
+        'unlocked': true,
+      },
+      {
+        'icon': Icons.castle_rounded,
+        'title': 'Culture Buff',
+        'description': 'Visit 20 museums',
+        'color': const Color(0xFF8B5CF6),
+        'unlocked': false,
+      },
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: BedbeesColors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: BedbeesColors.softShadow,
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Earned 3 of 4 badges',
+                style: BedbeesTextStyles.h4,
+              ),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  'View All',
+                  style: TextStyle(color: BedbeesColors.primaryBlue),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 100,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: achievements.length,
+              itemBuilder: (context, index) {
+                final achievement = achievements[index];
+                final unlocked = achievement['unlocked'] as bool;
+                return Container(
+                  width: 80,
+                  margin: const EdgeInsets.only(right: 12),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: unlocked
+                              ? (achievement['color'] as Color).withOpacity(0.1)
+                              : BedbeesColors.greyText.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: unlocked
+                                ? achievement['color'] as Color
+                                : BedbeesColors.greyText,
+                            width: 2,
+                          ),
+                        ),
+                        child: Icon(
+                          achievement['icon'] as IconData,
+                          color: unlocked
+                              ? achievement['color'] as Color
+                              : BedbeesColors.greyText,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        achievement['title'] as String,
+                        style: BedbeesTextStyles.caption.copyWith(
+                          color: unlocked
+                              ? BedbeesColors.darkText
+                              : BedbeesColors.greyText,
+                          fontWeight:
+                              unlocked ? FontWeight.w600 : FontWeight.normal,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreferences() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: BedbeesColors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: BedbeesColors.softShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Your Interests',
+                style: BedbeesTextStyles.h4,
+              ),
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  'Edit',
+                  style: TextStyle(color: BedbeesColors.primaryBlue),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildPreferenceChip('🏖️ Beach', true),
+              _buildPreferenceChip('🏔️ Mountains', true),
+              _buildPreferenceChip('🍜 Food Tours', true),
+              _buildPreferenceChip('🎨 Art & Culture', true),
+              _buildPreferenceChip('🏛️ History', false),
+              _buildPreferenceChip('🛍️ Shopping', true),
+              _buildPreferenceChip('🎭 Entertainment', false),
+              _buildPreferenceChip('⛰️ Adventure', true),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Divider(color: BedbeesColors.greyText.withOpacity(0.2)),
+          const SizedBox(height: 16),
+          Text(
+            'Travel Style',
+            style: BedbeesTextStyles.h4,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildTravelStyleCard(
+                  '💎 Luxury',
+                  'Premium experiences',
+                  true,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildTravelStyleCard(
+                  '💰 Budget',
+                  'Value for money',
+                  false,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPreferenceChip(String label, bool selected) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: selected
+            ? BedbeesColors.primaryBlue.withOpacity(0.1)
+            : BedbeesColors.greyText.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: selected
+              ? BedbeesColors.primaryBlue
+              : BedbeesColors.greyText.withOpacity(0.3),
+          width: 1.5,
         ),
-      ],
+      ),
+      child: Text(
+        label,
+        style: BedbeesTextStyles.bodySmall.copyWith(
+          color: selected ? BedbeesColors.primaryBlue : BedbeesColors.greyText,
+          fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTravelStyleCard(String title, String subtitle, bool selected) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: selected
+            ? BedbeesColors.primaryBlue.withOpacity(0.1)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: selected
+              ? BedbeesColors.primaryBlue
+              : BedbeesColors.greyText.withOpacity(0.3),
+          width: 2,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: BedbeesTextStyles.bodyMedium.copyWith(
+              color:
+                  selected ? BedbeesColors.primaryBlue : BedbeesColors.darkText,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            style: BedbeesTextStyles.caption.copyWith(
+              color: BedbeesColors.greyText,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
