@@ -29,6 +29,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
   int _selectedTab = 0;
   String _selectedCategory = 'Hotels';
   bool _isTravelerMode = true; // true = Traveler, false = Provider
+  final TextEditingController _searchController = TextEditingController();
 
   // Pages for bottom navigation
   late final List<Widget> _pages;
@@ -43,6 +44,12 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
       _buildWishlistPage(),
       const ProfilePage(),
     ];
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -203,52 +210,104 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
 
                 const SizedBox(height: 32),
 
-                // Search Bar
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  decoration: BoxDecoration(
-                    color: BedbeesColors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.search,
-                        color: BedbeesColors.primaryBlue,
-                        size: 26,
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          'Search destinations, hotels, tours...',
-                          style: BedbeesTextStyles.bodyMedium.copyWith(
-                            color: BedbeesColors.greyText,
-                            fontSize: 15,
+                // Enhanced Search Bar
+                GestureDetector(
+                  onTap: () => _showSearchBottomSheet(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: BedbeesColors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 25,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        // Main Search Section
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 16),
+                            child: Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: BedbeesColors.primaryBlue
+                                        .withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Icon(
+                                    Icons.search_rounded,
+                                    color: BedbeesColors.primaryBlue,
+                                    size: 24,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Where to?',
+                                        style: BedbeesTextStyles.h4.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'Search destinations, hotels, tours...',
+                                        style: BedbeesTextStyles.bodySmall
+                                            .copyWith(
+                                          color: BedbeesColors.greyText,
+                                          fontSize: 13,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: BedbeesColors.coral,
-                          borderRadius: BorderRadius.circular(10),
+                        // Filter Button
+                        Container(
+                          margin: const EdgeInsets.only(right: 4),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFF0EA5E9),
+                                Color(0xFF0284C7),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color:
+                                    BedbeesColors.primaryBlue.withOpacity(0.4),
+                                blurRadius: 10,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.tune_rounded,
+                            color: BedbeesColors.white,
+                            size: 24,
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.tune_rounded,
-                          color: BedbeesColors.white,
-                          size: 22,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
 
@@ -1505,6 +1564,370 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ============================================
+  // SEARCH BOTTOM SHEET
+  // ============================================
+  void _showSearchBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.85,
+        decoration: const BoxDecoration(
+          color: BedbeesColors.screenBackground,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+        ),
+        child: Column(
+          children: [
+            // Handle Bar
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: BedbeesColors.greyText.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // Search Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: BedbeesColors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: BedbeesColors.softShadow,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.search_rounded,
+                            color: BedbeesColors.primaryBlue,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: TextField(
+                              controller: _searchController,
+                              autofocus: true,
+                              decoration: InputDecoration(
+                                hintText: 'Search destinations, hotels...',
+                                hintStyle:
+                                    BedbeesTextStyles.bodyMedium.copyWith(
+                                  color: BedbeesColors.greyText,
+                                ),
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                              onChanged: (value) {
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                          if (_searchController.text.isNotEmpty)
+                            IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.clear_rounded,
+                                color: BedbeesColors.greyText,
+                                size: 20,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      'Cancel',
+                      style: BedbeesTextStyles.bodyMedium.copyWith(
+                        color: BedbeesColors.primaryBlue,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Search Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Quick Filters
+                    Text(
+                      'QUICK FILTERS',
+                      style: BedbeesTextStyles.caption.copyWith(
+                        color: BedbeesColors.greyText,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _buildFilterChip('🏨 Hotels', Icons.hotel_rounded),
+                        _buildFilterChip('✈️ Flights', Icons.flight_rounded),
+                        _buildFilterChip(
+                            '🚗 Car Rental', Icons.directions_car_rounded),
+                        _buildFilterChip('🎫 Tours', Icons.explore_rounded),
+                        _buildFilterChip(
+                            '🏖️ Beach', Icons.beach_access_rounded),
+                        _buildFilterChip('🏔️ Mountain', Icons.terrain_rounded),
+                      ],
+                    ),
+
+                    const SizedBox(height: 32),
+
+                    // Popular Searches
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'POPULAR SEARCHES',
+                          style: BedbeesTextStyles.caption.copyWith(
+                            color: BedbeesColors.greyText,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        Icon(
+                          Icons.trending_up_rounded,
+                          color: BedbeesColors.coral,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    _buildPopularSearch(
+                        'Dubai Desert Safari', Icons.landscape_rounded),
+                    _buildPopularSearch(
+                        'Burj Khalifa Tours', Icons.apartment_rounded),
+                    _buildPopularSearch(
+                        'Dubai Marina Cruise', Icons.sailing_rounded),
+                    _buildPopularSearch(
+                        'Palm Jumeirah Hotels', Icons.hotel_rounded),
+                    _buildPopularSearch(
+                        'Abu Dhabi Day Trip', Icons.directions_bus_rounded),
+
+                    const SizedBox(height: 32),
+
+                    // Recent Searches
+                    Text(
+                      'RECENT SEARCHES',
+                      style: BedbeesTextStyles.caption.copyWith(
+                        color: BedbeesColors.greyText,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildRecentSearch('Luxury hotels in Dubai', Icons.history),
+                    _buildRecentSearch('Paris weekend getaway', Icons.history),
+                    _buildRecentSearch('Beach resorts Maldives', Icons.history),
+
+                    const SizedBox(height: 32),
+
+                    // Trending Destinations
+                    Text(
+                      'TRENDING DESTINATIONS',
+                      style: BedbeesTextStyles.caption.copyWith(
+                        color: BedbeesColors.greyText,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      height: 140,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: 5,
+                        itemBuilder: (context, index) {
+                          final destinations = [
+                            {'name': 'Dubai', 'image': '🏙️', 'deals': '234'},
+                            {'name': 'Bali', 'image': '🏖️', 'deals': '189'},
+                            {'name': 'Paris', 'image': '🗼', 'deals': '156'},
+                            {'name': 'Tokyo', 'image': '🗾', 'deals': '203'},
+                            {
+                              'name': 'Maldives',
+                              'image': '🏝️',
+                              'deals': '142'
+                            },
+                          ];
+                          final dest = destinations[index];
+                          return Container(
+                            width: 120,
+                            margin: const EdgeInsets.only(right: 12),
+                            decoration: BoxDecoration(
+                              color: BedbeesColors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: BedbeesColors.softShadow,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  dest['image']!,
+                                  style: const TextStyle(fontSize: 48),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  dest['name']!,
+                                  style: BedbeesTextStyles.h4,
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  '${dest['deals']} deals',
+                                  style: BedbeesTextStyles.caption.copyWith(
+                                    color: BedbeesColors.primaryBlue,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 100),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: BedbeesColors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: BedbeesColors.primaryBlue.withOpacity(0.2),
+          width: 1,
+        ),
+        boxShadow: BedbeesColors.softShadow,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: BedbeesTextStyles.bodyMedium.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPopularSearch(String title, IconData icon) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: BedbeesColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: BedbeesColors.softShadow,
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: BedbeesColors.coral.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            icon,
+            color: BedbeesColors.coral,
+            size: 20,
+          ),
+        ),
+        title: Text(
+          title,
+          style: BedbeesTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        trailing: const Icon(
+          Icons.arrow_forward_ios_rounded,
+          color: BedbeesColors.greyText,
+          size: 16,
+        ),
+        onTap: () {
+          // Handle search selection
+        },
+      ),
+    );
+  }
+
+  Widget _buildRecentSearch(String query, IconData icon) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: BedbeesColors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: BedbeesColors.softShadow,
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        leading: Icon(
+          icon,
+          color: BedbeesColors.greyText,
+          size: 20,
+        ),
+        title: Text(
+          query,
+          style: BedbeesTextStyles.bodyMedium,
+        ),
+        trailing: IconButton(
+          icon: const Icon(
+            Icons.close_rounded,
+            color: BedbeesColors.greyText,
+            size: 18,
+          ),
+          onPressed: () {
+            // Remove from recent searches
+          },
+        ),
+        onTap: () {
+          // Handle search selection
+        },
       ),
     );
   }
