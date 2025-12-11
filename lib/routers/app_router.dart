@@ -18,12 +18,10 @@ import '../features/hotels/hotels_list_page.dart';
 import '../features/onboarding/modern_welcome_page.dart';
 import '../features/onboarding/onboarding_travel_page.dart';
 import '../features/onboarding/onboarding_traveler_page.dart';
-import '../features/onboarding/onboarding_traveler_page.dart';
 import '../features/onboarding/welcome_page.dart';
 import '../features/provider/provider_dashboard_page.dart';
 import '../features/shared_trips/shared_trips_page.dart';
 import '../features/showcase/modern_showcase_page.dart';
-import '../features/splash/splash_page.dart';
 import '../features/tours/tours_list_page.dart';
 import '../services/auth/auth_service.dart';
 
@@ -31,37 +29,26 @@ import '../services/auth/auth_service.dart';
 final appRouter = GoRouter(
   initialLocation: '/',
   redirect: (context, state) async {
-    final authService = getIt<AuthService>();
-    final isAuthenticated = await authService.isAuthenticated();
-    final userType = await authService.getUserType();
+    // Allow free exploration - no authentication required
+    // Users can browse all content without logging in
 
-    final isGoingToAuth = state.matchedLocation.startsWith('/auth') ||
-        state.matchedLocation.startsWith('/provider/login') ||
-        state.matchedLocation.startsWith('/provider/register') ||
-        state.matchedLocation.startsWith('/bedbees/login') ||
-        state.matchedLocation.startsWith('/bedbees/signup') ||
-        state.matchedLocation.startsWith('/onboarding');
+    // Only redirect authenticated providers to their dashboard
+    if (state.matchedLocation.startsWith('/provider')) {
+      final authService = getIt<AuthService>();
+      final isAuthenticated = await authService.isAuthenticated();
 
-    // If not authenticated and not going to auth pages
-    if (!isAuthenticated && !isGoingToAuth && state.matchedLocation != '/') {
-      return '/auth/login';
-    }
-
-    // If authenticated and going to auth pages
-    if (isAuthenticated && isGoingToAuth) {
-      if (userType == 'provider') {
-        return '/provider/dashboard';
+      if (!isAuthenticated && state.matchedLocation == '/provider/dashboard') {
+        return '/home';
       }
-      return '/home';
     }
 
     return null;
   },
   routes: [
-    // Splash
+    // Splash - goes directly to home
     GoRoute(
       path: '/',
-      builder: (context, state) => const SplashPage(),
+      builder: (context, state) => const BedbeesHomePage(),
     ),
 
     // Welcome/Onboarding
@@ -140,7 +127,7 @@ final appRouter = GoRouter(
       path: '/home',
       builder: (context, state) => const HomePage(),
     ),
-    
+
     // New Bedbees Design System Routes
     GoRoute(
       path: '/bedbees-home',

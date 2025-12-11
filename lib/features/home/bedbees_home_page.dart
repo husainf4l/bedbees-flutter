@@ -7,7 +7,7 @@ import '../../core/widgets/bedbees_components.dart';
 import '../../services/auth/auth_service.dart';
 import '../explore/explore_page.dart';
 import '../saved/saved_page.dart';
-import '../profile/profile_page.dart';
+import '../profile/profile_page_new.dart';
 import '../hotels/hotels_page.dart';
 import '../apartments/apartments_page.dart';
 import '../car_rental/car_rental_page.dart';
@@ -929,7 +929,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
           Expanded(
             child: _buildModeButton(
               label: 'Traveler',
-              icon: Icons.flight_rounded,
+              icon: Icons.explore_rounded,
               isSelected: _isTravelerMode,
               onTap: () => setState(() => _isTravelerMode = true),
             ),
@@ -1381,7 +1381,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                   height: 40,
                   color: Colors.white.withOpacity(0.3),
                 ),
-                _buildWishlistStat('2', 'Flights', Icons.flight_rounded),
+                _buildWishlistStat('4', 'Cars', Icons.directions_car_rounded),
               ],
             ),
           ),
@@ -1695,13 +1695,13 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                       runSpacing: 8,
                       children: [
                         _buildFilterChip('🏨 Hotels', Icons.hotel_rounded),
-                        _buildFilterChip('✈️ Flights', Icons.flight_rounded),
                         _buildFilterChip(
                             '🚗 Car Rental', Icons.directions_car_rounded),
                         _buildFilterChip('🎫 Tours', Icons.explore_rounded),
                         _buildFilterChip(
-                            '🏖️ Beach', Icons.beach_access_rounded),
-                        _buildFilterChip('🏔️ Mountain', Icons.terrain_rounded),
+                            '�️ Beach', Icons.beach_access_rounded),
+                        _buildFilterChip('�️ Mountain', Icons.terrain_rounded),
+                        _buildFilterChip('🚕 Taxi', Icons.local_taxi_rounded),
                       ],
                     ),
 
