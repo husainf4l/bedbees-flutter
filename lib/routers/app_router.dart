@@ -11,6 +11,7 @@ import '../features/destinations/destinations_list_page.dart';
 import '../features/destinations/destination_details_page.dart';
 import '../features/home/home_page.dart';
 import '../features/home/bedbees_home_page.dart';
+import '../features/profile/profile_page.dart';
 import '../features/auth/new_bedbees_login_page.dart';
 import '../features/auth/new_bedbees_signup_page.dart';
 import '../features/ai_planner/ai_trip_planner_page.dart';
@@ -22,6 +23,7 @@ import '../features/onboarding/welcome_page.dart';
 import '../features/provider/provider_dashboard_page.dart';
 import '../features/shared_trips/shared_trips_page.dart';
 import '../features/showcase/modern_showcase_page.dart';
+import '../features/splash/splash_page.dart';
 import '../features/tours/tours_list_page.dart';
 import '../services/auth/auth_service.dart';
 
@@ -45,9 +47,15 @@ final appRouter = GoRouter(
     return null;
   },
   routes: [
-    // Splash - goes directly to home
+    // Splash - shows icon with animations
     GoRoute(
       path: '/',
+      builder: (context, state) => const SplashPage(),
+    ),
+
+    // Home
+    GoRoute(
+      path: '/bedbees-home',
       builder: (context, state) => const BedbeesHomePage(),
     ),
 
@@ -126,6 +134,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/home',
       builder: (context, state) => const HomePage(),
+    ),
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfilePage(),
     ),
 
     // New Bedbees Design System Routes

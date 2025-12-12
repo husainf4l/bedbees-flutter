@@ -10,15 +10,96 @@ class SplashPage extends StatefulWidget {
   State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late AnimationController _fadeController;
+  late AnimationController _rotateController;
+  late AnimationController _slideController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
   @override
   void initState() {
     super.initState();
+
+    // Scale animation
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+    _scaleAnimation = CurvedAnimation(
+      parent: _scaleController,
+      curve: Curves.elasticOut,
+    );
+
+    // Fade animation
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _fadeController,
+      curve: Curves.easeIn,
+    );
+
+    // Rotate animation
+    _rotateController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    // Slide animation (left-right movement)
+    _slideController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+    _slideAnimation = TweenSequence<Offset>([
+      TweenSequenceItem(
+        tween: Tween<Offset>(
+          begin: Offset.zero,
+          end: const Offset(0.15, 0),
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 25,
+      ),
+      TweenSequenceItem(
+        tween: Tween<Offset>(
+          begin: const Offset(0.15, 0),
+          end: const Offset(-0.15, 0),
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 50,
+      ),
+      TweenSequenceItem(
+        tween: Tween<Offset>(
+          begin: const Offset(-0.15, 0),
+          end: Offset.zero,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 25,
+      ),
+    ]).animate(_slideController);
+
+    // Start animations
+    _fadeController.forward();
+    Future.delayed(const Duration(milliseconds: 200), () {
+      _scaleController.forward();
+      _rotateController.forward();
+      _slideController.forward();
+    });
+
     _navigateToNext();
   }
 
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    _fadeController.dispose();
+    _rotateController.dispose();
+    _slideController.dispose();
+    super.dispose();
+  }
+
   Future<void> _navigateToNext() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 3));
     if (!mounted) return;
     // Navigate to new Bedbees home with official design system
     context.go('/bedbees-home');
@@ -30,20 +111,12 @@ class _SplashPageState extends State<SplashPage> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              const Color(0xFF0EA5E9),
-              const Color(0xFF0284C7),
-              const Color(0xFF0369A1),
-            ],
-          ),
+        decoration: const BoxDecoration(
+          color: Color(0xFFF8F9FA), // Light gray background matching the app
         ),
         child: Stack(
           children: [
-            // Decorative geometric shapes
+            // Decorative geometric shapes with brand colors
             Positioned(
               top: -80,
               right: -80,
@@ -54,7 +127,7 @@ class _SplashPageState extends State<SplashPage> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      Colors.white.withOpacity(0.1),
+                      BedbeesColors.primaryBlue.withOpacity(0.15),
                       Colors.transparent,
                     ],
                   ),
@@ -71,7 +144,7 @@ class _SplashPageState extends State<SplashPage> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      BedbeesColors.coral.withOpacity(0.15),
+                      BedbeesColors.coral.withOpacity(0.12),
                       Colors.transparent,
                     ],
                   ),
@@ -88,7 +161,7 @@ class _SplashPageState extends State<SplashPage> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      Colors.white.withOpacity(0.08),
+                      BedbeesColors.primaryBlue.withOpacity(0.1),
                       Colors.transparent,
                     ],
                   ),
@@ -105,7 +178,7 @@ class _SplashPageState extends State<SplashPage> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      const Color(0xFFF9C94C).withOpacity(0.12),
+                      BedbeesColors.sunshineYellow.withOpacity(0.12),
                       Colors.transparent,
                     ],
                   ),
@@ -121,83 +194,96 @@ class _SplashPageState extends State<SplashPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Spacer(flex: 2),
-                      // Logo with premium styling
-                      Hero(
-                        tag: 'app_logo',
-                        child: Container(
-                          width: 140,
-                          height: 140,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(35),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 40,
-                                spreadRadius: 0,
-                                offset: const Offset(0, 20),
+                      // Logo with premium styling and animations
+                      FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: ScaleTransition(
+                          scale: _scaleAnimation,
+                          child: SlideTransition(
+                            position: _slideAnimation,
+                            child: Hero(
+                              tag: 'app_logo',
+                              child: Container(
+                                width: 200,
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(50),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: BedbeesColors.primaryBlue
+                                          .withOpacity(0.2),
+                                      blurRadius: 40,
+                                      spreadRadius: 0,
+                                      offset: const Offset(0, 20),
+                                    ),
+                                    BoxShadow(
+                                      color: BedbeesColors.primaryBlue
+                                          .withOpacity(0.1),
+                                      blurRadius: 20,
+                                      spreadRadius: -5,
+                                      offset: const Offset(0, -5),
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.all(20),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(25),
+                                  child: Image.asset(
+                                    'assets/images/icon.png',
+                                    fit: BoxFit.contain,
+                                  ),
+                                ),
                               ),
-                              BoxShadow(
-                                color: Colors.white.withOpacity(0.1),
-                                blurRadius: 20,
-                                spreadRadius: -5,
-                                offset: const Offset(0, -5),
-                              ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.all(20),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Image.asset(
-                              'assets/images/bedbees.webp',
-                              fit: BoxFit.contain,
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 48),
                       // Brand name with elegant styling
-                      ShaderMask(
-                        shaderCallback: (bounds) => LinearGradient(
-                          colors: [
-                            Colors.white,
-                            Colors.white.withOpacity(0.95),
-                          ],
-                        ).createShader(bounds),
-                        child: const Text(
-                          'Travel Smarter',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 42,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: -1,
-                            height: 1.1,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Tagline
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 10,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.2),
-                            width: 1,
-                          ),
-                        ),
-                        child: const Text(
-                          'Your Journey Begins Here',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            letterSpacing: 0.5,
-                            fontWeight: FontWeight.w500,
+                      FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 0.3),
+                            end: Offset.zero,
+                          ).animate(CurvedAnimation(
+                            parent: _fadeController,
+                            curve: Curves.easeOut,
+                          )),
+                          child: Column(
+                            children: [
+                              ShaderMask(
+                                shaderCallback: (bounds) => LinearGradient(
+                                  colors: [
+                                    BedbeesColors.primaryBlue,
+                                    BedbeesColors.primaryBlueDark,
+                                  ],
+                                ).createShader(bounds),
+                                child: const Text(
+                                  'Travel Smarter',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 36,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                    letterSpacing: -1,
+                                    height: 1.1,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'with BedBees',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: BedbeesColors.primaryBlue.withOpacity(0.7),
+                                  letterSpacing: 1.5,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -209,8 +295,8 @@ class _SplashPageState extends State<SplashPage> {
                             width: 40,
                             height: 40,
                             child: CircularProgressIndicator(
-                              valueColor: const AlwaysStoppedAnimation<Color>(
-                                Colors.white,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                BedbeesColors.primaryBlue,
                               ),
                               strokeWidth: 3.5,
                               strokeCap: StrokeCap.round,
@@ -221,7 +307,7 @@ class _SplashPageState extends State<SplashPage> {
                             'Loading...',
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.white.withOpacity(0.7),
+                              color: BedbeesColors.greyText,
                               letterSpacing: 1.2,
                               fontWeight: FontWeight.w400,
                             ),

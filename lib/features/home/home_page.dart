@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../navigation/app_drawer.dart';
+import '../profile/profile_page.dart';
 
 /// Apple-Style Home Page
 class HomePage extends StatefulWidget {
@@ -17,7 +18,7 @@ class _HomePageState extends State<HomePage> {
     const HomeTab(),
     const DestinationsTab(),
     const TripsTab(),
-    const ProfileTab(),
+    const ProfilePage(),
   ];
 
   @override

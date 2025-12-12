@@ -290,6 +290,11 @@ class _BedbeesLoginPageState extends State<BedbeesLoginPage> {
             controller: controller,
             obscureText: obscureText,
             validator: validator,
+            autofillHints: label == 'Email' 
+                ? [AutofillHints.email, AutofillHints.username]
+                : label == 'Password'
+                    ? [AutofillHints.password]
+                    : null,
             style: const TextStyle(
               fontSize: 16,
               color: Color(0xFF212121),

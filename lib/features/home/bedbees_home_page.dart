@@ -55,7 +55,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: BedbeesColors.screenBackground,
+      backgroundColor: const Color(0xFFF8F9FA),
       drawer: _selectedTab == 0 ? _buildDrawer(context) : null,
       body: IndexedStack(
         index: _selectedTab,
@@ -153,16 +153,19 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: BedbeesColors.white.withOpacity(0.3),
-                            width: 1,
-                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: const Icon(
                           Icons.menu_rounded,
-                          color: BedbeesColors.white,
+                          color: Color(0xFF1A1A1A),
                           size: 24,
                         ),
                       ),
@@ -172,16 +175,19 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: BedbeesColors.white.withOpacity(0.3),
-                          width: 1,
-                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: const Icon(
                         Icons.notifications_outlined,
-                        color: BedbeesColors.white,
+                        color: Color(0xFF1A1A1A),
                         size: 24,
                       ),
                     ),
@@ -214,96 +220,63 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                 GestureDetector(
                   onTap: () => _showSearchBottomSheet(context),
                   child: Container(
-                    padding: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 14),
                     decoration: BoxDecoration(
                       color: BedbeesColors.white,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 25,
-                          offset: const Offset(0, 10),
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
                     child: Row(
                       children: [
-                        // Main Search Section
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 16),
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: BedbeesColors.primaryBlue
-                                        .withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    Icons.search_rounded,
-                                    color: BedbeesColors.primaryBlue,
-                                    size: 24,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Where to?',
-                                        style: BedbeesTextStyles.h4.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        'Search destinations, hotels, tours...',
-                                        style: BedbeesTextStyles.bodySmall
-                                            .copyWith(
-                                          color: BedbeesColors.greyText,
-                                          fontSize: 13,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                        const Icon(
+                          Icons.search_rounded,
+                          color: BedbeesColors.primaryBlue,
+                          size: 24,
                         ),
-                        // Filter Button
-                        Container(
-                          margin: const EdgeInsets.only(right: 4),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [
-                                Color(0xFF0EA5E9),
-                                Color(0xFF0284C7),
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color:
-                                    BedbeesColors.primaryBlue.withOpacity(0.4),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Where to?',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF1A1A1A),
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Search destinations, hotels, tours...',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: BedbeesColors.greyText,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: BedbeesColors.primaryBlue,
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
                             Icons.tune_rounded,
                             color: BedbeesColors.white,
-                            size: 24,
+                            size: 20,
                           ),
                         ),
                       ],
@@ -618,7 +591,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
   // ============================================
   Widget _buildDrawer(BuildContext context) {
     return Drawer(
-      backgroundColor: BedbeesColors.screenBackground,
+      backgroundColor: Colors.white,
       child: SafeArea(
         child: Column(
           children: [
@@ -628,12 +601,12 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
             // Mode Toggle (Traveler / Provider)
             _buildModeToggle(),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 16),
 
             // Main Navigation - Scrollable
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 children: [
                   if (_isTravelerMode) ...[
                     // TRAVELER MODE NAVIGATION
@@ -652,7 +625,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                       onTap: () {},
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     _buildSectionHeader('BOOK'),
                     _buildNavItem(
                       icon: Icons.hotel_rounded,
@@ -681,7 +654,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                       onTap: () {},
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     _buildSectionHeader('PLAN'),
                     _buildNavItem(
                       icon: Icons.auto_awesome_rounded,
@@ -701,7 +674,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                       onTap: () {},
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     _buildSectionHeader('MANAGE'),
                     _buildNavItem(
                       icon: Icons.receipt_long_rounded,
@@ -732,7 +705,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                       onTap: () {},
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     _buildSectionHeader('LISTINGS'),
                     _buildNavItem(
                       icon: Icons.business_rounded,
@@ -756,7 +729,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                       onTap: () {},
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     _buildSectionHeader('BOOKINGS'),
                     _buildNavItem(
                       icon: Icons.calendar_today_rounded,
@@ -773,7 +746,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                       onTap: () {},
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     _buildSectionHeader('BUSINESS'),
                     _buildNavItem(
                       icon: Icons.attach_money_rounded,
@@ -797,7 +770,7 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                     ),
                   ],
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   _buildSectionHeader('ACCOUNT'),
                   _buildNavItem(
                     icon: Icons.settings_rounded,
@@ -830,12 +803,19 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
   // Profile Section
   Widget _buildProfileSection() {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: BedbeesColors.blueGradient,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: BedbeesColors.softShadow,
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -846,15 +826,36 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                 padding: const EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: BedbeesColors.white, width: 2.5),
+                  gradient: LinearGradient(
+                    colors: [
+                      BedbeesColors.primaryBlue,
+                      BedbeesColors.primaryBlueDark,
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: BedbeesColors.primaryBlue.withOpacity(0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: CircleAvatar(
-                  radius: 28,
-                  backgroundColor: BedbeesColors.coral,
-                  child: Text(
-                    'JD',
-                    style: BedbeesTextStyles.h3.copyWith(
-                      color: BedbeesColors.white,
+                child: Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundColor: BedbeesColors.primaryBlue,
+                    child: const Text(
+                      'JD',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
@@ -866,14 +867,22 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'John Doe',
-                      style: BedbeesTextStyles.white(BedbeesTextStyles.h3),
+                      style: TextStyle(
+                        fontSize: 19,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1A1A1A),
+                      ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Text(
                       'john.doe@bedbees.com',
-                      style: BedbeesTextStyles.white(BedbeesTextStyles.caption),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: BedbeesColors.greyText.withOpacity(0.8),
+                        fontWeight: FontWeight.w400,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -882,29 +891,42 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
             ],
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
 
           // View Profile Button
           GestureDetector(
             onTap: () {},
             child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color: BedbeesColors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
+                gradient: LinearGradient(
+                  colors: [
+                    BedbeesColors.primaryBlue.withOpacity(0.15),
+                    BedbeesColors.primaryBlue.withOpacity(0.05),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: BedbeesColors.primaryBlue.withOpacity(0.2),
+                  width: 1,
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(
                     Icons.person_rounded,
-                    color: BedbeesColors.white,
-                    size: 18,
+                    color: BedbeesColors.primaryBlue,
+                    size: 20,
                   ),
-                  const SizedBox(width: 8),
-                  Text(
+                  const SizedBox(width: 10),
+                  const Text(
                     'View Profile',
-                    style: BedbeesTextStyles.white(BedbeesTextStyles.label),
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: BedbeesColors.primaryBlue,
+                    ),
                   ),
                 ],
               ),
@@ -918,11 +940,19 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
   // Mode Toggle
   Widget _buildModeToggle() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(4),
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: BedbeesColors.cardBackground,
-        borderRadius: BorderRadius.circular(12),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -988,12 +1018,14 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
   // Section Header
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8, top: 8),
+      padding: const EdgeInsets.only(left: 6, bottom: 12, top: 4),
       child: Text(
         title,
         style: BedbeesTextStyles.overline.copyWith(
-          color: BedbeesColors.greyText,
-          letterSpacing: 1.2,
+          color: BedbeesColors.greyText.withOpacity(0.7),
+          letterSpacing: 1.5,
+          fontWeight: FontWeight.w700,
+          fontSize: 11,
         ),
       ),
     );
@@ -1011,70 +1043,129 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
     required VoidCallback onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 4),
+      margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: isActive
-            ? BedbeesColors.primaryBlue.withOpacity(0.1)
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
+        color: isActive ? Colors.white : Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: isActive
+            ? [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
+                  spreadRadius: 0,
+                ),
+              ]
+            : null,
         border: isActive
-            ? Border.all(color: BedbeesColors.primaryBlue.withOpacity(0.3))
+            ? Border.all(
+                color: BedbeesColors.primaryBlue.withOpacity(0.15),
+                width: 1,
+              )
             : null,
       ),
-      child: ListTile(
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: isActive
-                ? BedbeesColors.primaryBlue
-                : iconColor?.withOpacity(0.1) ?? BedbeesColors.cardBackground,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: isActive
-                ? BedbeesColors.white
-                : iconColor ?? BedbeesColors.primaryBlue,
-          ),
-        ),
-        title: Text(
-          title,
-          style: BedbeesTextStyles.label.copyWith(
-            color:
-                isActive ? BedbeesColors.primaryBlue : BedbeesColors.darkText,
-            fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-          ),
-        ),
-        subtitle: subtitle != null
-            ? Text(
-                subtitle,
-                style: BedbeesTextStyles.caption.copyWith(fontSize: 11),
-              )
-            : null,
-        trailing: badge != null
-            ? Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: badgeColor ?? BedbeesColors.primaryBlue,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  badge,
-                  style: BedbeesTextStyles.caption.copyWith(
-                    color: BedbeesColors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 10,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                // Icon
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    gradient: isActive
+                        ? LinearGradient(
+                            colors: [
+                              BedbeesColors.primaryBlue,
+                              BedbeesColors.primaryBlueDark,
+                            ],
+                          )
+                        : null,
+                    color: isActive
+                        ? null
+                        : (iconColor?.withOpacity(0.12) ??
+                            BedbeesColors.primaryBlue.withOpacity(0.08)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    icon,
+                    size: 22,
+                    color: isActive
+                        ? Colors.white
+                        : (iconColor ?? BedbeesColors.primaryBlue),
                   ),
                 ),
-              )
-            : Icon(
-                Icons.chevron_right_rounded,
-                size: 20,
-                color: BedbeesColors.greyText.withOpacity(0.5),
-              ),
+                const SizedBox(width: 16),
+                // Title and Subtitle
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: isActive
+                              ? BedbeesColors.primaryBlue
+                              : const Color(0xFF1A1A1A),
+                          fontWeight:
+                              isActive ? FontWeight.w700 : FontWeight.w600,
+                        ),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: BedbeesColors.greyText.withOpacity(0.7),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                // Badge or Arrow
+                if (badge != null)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: badgeColor ?? BedbeesColors.primaryBlue,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: (badgeColor ?? BedbeesColors.primaryBlue)
+                              .withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Text(
+                      badge,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 11,
+                      ),
+                    ),
+                  )
+                else
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 22,
+                    color: BedbeesColors.greyText.withOpacity(0.4),
+                  ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1325,28 +1416,57 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
   // ============================================
   Widget _buildWishlistPage() {
     return Scaffold(
-      backgroundColor: BedbeesColors.screenBackground,
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
+        shadowColor: Colors.black.withOpacity(0.04),
         title: const Text(
           'My Wishlist',
           style: TextStyle(
             color: Color(0xFF1A1A1A),
             fontSize: 24,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
           ),
         ),
         centerTitle: false,
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.search, color: Color(0xFF1A1A1A)),
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.search, color: BedbeesColors.primaryBlue),
+            ),
           ),
-          IconButton(
-            onPressed: () {},
-            icon:
-                const Icon(Icons.filter_list_rounded, color: Color(0xFF1A1A1A)),
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.filter_list_rounded,
+                  color: BedbeesColors.primaryBlue),
+            ),
           ),
         ],
       ),
@@ -1355,20 +1475,20 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
         children: [
           // Stats Card
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  BedbeesColors.coral,
-                  BedbeesColors.coral.withOpacity(0.8),
+                  BedbeesColors.primaryBlue,
+                  BedbeesColors.primaryBlueDark,
                 ],
               ),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: BedbeesColors.coral.withOpacity(0.3),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
+                  color: BedbeesColors.primaryBlue.withOpacity(0.3),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
@@ -1456,11 +1576,11 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 16,
             offset: const Offset(0, 4),
           ),
         ],
@@ -1470,19 +1590,26 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
           // Image
           ClipRRect(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(16),
-              bottomLeft: Radius.circular(16),
+              topLeft: Radius.circular(20),
+              bottomLeft: Radius.circular(20),
             ),
             child: Image.network(
               imageUrl,
-              width: 120,
-              height: 120,
+              width: 130,
+              height: 130,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) => Container(
-                width: 120,
-                height: 120,
-                color: Colors.grey[200],
-                child: Icon(categoryIcon, size: 40, color: Colors.grey[400]),
+                width: 130,
+                height: 130,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      BedbeesColors.primaryBlue.withOpacity(0.6),
+                      BedbeesColors.primaryBlue,
+                    ],
+                  ),
+                ),
+                child: Icon(categoryIcon, size: 45, color: Colors.white),
               ),
             ),
           ),
@@ -1497,58 +1624,61 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
+                          horizontal: 10,
+                          vertical: 6,
                         ),
                         decoration: BoxDecoration(
-                          color: BedbeesColors.primaryBlue.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(6),
+                          color: BedbeesColors.primaryBlue.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
                           categoryIcon,
-                          size: 14,
+                          size: 16,
                           color: BedbeesColors.primaryBlue,
                         ),
                       ),
                       const Spacer(),
-                      IconButton(
-                        onPressed: () {},
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        icon: const Icon(
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: BedbeesColors.coral.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
                           Icons.favorite,
                           color: BedbeesColors.coral,
-                          size: 22,
+                          size: 18,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Text(
                     title,
                     style: const TextStyle(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w700,
                       color: Color(0xFF1A1A1A),
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Row(
                     children: [
                       const Icon(
                         Icons.location_on,
-                        size: 14,
+                        size: 15,
                         color: BedbeesColors.greyText,
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           location,
                           style: const TextStyle(
                             fontSize: 13,
                             color: BedbeesColors.greyText,
+                            fontWeight: FontWeight.w500,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -1556,12 +1686,12 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Text(
                     price,
                     style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
                       color: BedbeesColors.primaryBlue,
                     ),
                   ),

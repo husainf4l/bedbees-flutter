@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../../config/locator.dart';
 import '../../core/theme/bedbees_colors.dart';
 import '../../core/theme/bedbees_text_styles.dart';
+import '../../data/models/user_model.dart';
 import '../../services/auth/auth_service.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -15,20 +15,46 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool _isAuthenticated = false;
   bool _isLoading = true;
+  UserModel? _user;
+  ProviderModel? _provider;
+  String? _userType;
 
   @override
   void initState() {
     super.initState();
-    _checkAuthStatus();
+    _loadUserData();
   }
 
-  Future<void> _checkAuthStatus() async {
+  Future<void> _loadUserData() async {
     final authService = getIt<AuthService>();
     final authenticated = await authService.isAuthenticated();
-    setState(() {
-      _isAuthenticated = authenticated;
-      _isLoading = false;
-    });
+    
+    if (authenticated) {
+      final userType = await authService.getUserType();
+      
+      if (userType == 'traveler') {
+        final user = await authService.getCurrentUser();
+        setState(() {
+          _isAuthenticated = true;
+          _user = user;
+          _userType = userType;
+          _isLoading = false;
+        });
+      } else if (userType == 'provider') {
+        final provider = await authService.getCurrentProvider();
+        setState(() {
+          _isAuthenticated = true;
+          _provider = provider;
+          _userType = userType;
+          _isLoading = false;
+        });
+      }
+    } else {
+      setState(() {
+        _isAuthenticated = false;
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -79,22 +105,42 @@ class _ProfilePageState extends State<ProfilePage> {
                 padding: const EdgeInsets.all(32),
                 child: Column(
                   children: [
-                    // Icon
-                    Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: BedbeesColors.primaryBlue.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.person_outline_rounded,
-                        size: 40,
-                        color: BedbeesColors.primaryBlue,
+                    // Logo (B icon from splash page)
+                    Hero(
+                      tag: 'app_logo',
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: BedbeesColors.primaryBlue.withOpacity(0.2),
+                              blurRadius: 24,
+                              spreadRadius: 0,
+                              offset: const Offset(0, 8),
+                            ),
+                            BoxShadow(
+                              color: BedbeesColors.primaryBlue.withOpacity(0.1),
+                              blurRadius: 12,
+                              spreadRadius: -2,
+                              offset: const Offset(0, -2),
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: Image.asset(
+                            'assets/images/icon.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
 
                     // Title
                     const Text(
@@ -127,7 +173,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () => _showAuthModal(context, isLogin: false),
+                        onPressed: () {
+                          Navigator.of(context).pushNamed('/auth/traveler/signup');
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: BedbeesColors.primaryBlue,
                           foregroundColor: Colors.white,
@@ -153,7 +201,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       width: double.infinity,
                       height: 56,
                       child: OutlinedButton(
-                        onPressed: () => _showAuthModal(context, isLogin: true),
+                        onPressed: () {
+                          Navigator.of(context).pushNamed('/auth/login');
+                        },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: BedbeesColors.primaryBlue,
                           side: BorderSide(
@@ -770,11 +820,385 @@ class _ProfilePageState extends State<ProfilePage> {
   // Placeholder for authenticated profile
   Widget _buildAuthenticatedProfile() {
     return Scaffold(
-      backgroundColor: BedbeesColors.screenBackground,
-      body: Center(
-        child: Text('Authenticated Profile', style: BedbeesTextStyles.h2),
+      backgroundColor: const Color(0xFFF8F9FA),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              // Header with user info
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      BedbeesColors.primaryBlue,
+                      BedbeesColors.primaryBlue.withOpacity(0.8),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    // Profile Picture
+                    Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          _getUserInitials(),
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
+                            color: BedbeesColors.primaryBlue,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // User Name
+                    Text(
+                      _getUserName(),
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // User Email
+                    Text(
+                      _getUserEmail(),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.white.withOpacity(0.9),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Menu Items
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    _buildMenuSection('Account', [
+                      _buildMenuItem(
+                        icon: Icons.person_outline,
+                        title: 'Personal Information',
+                        subtitle: 'Manage your account details',
+                        onTap: () {},
+                      ),
+                      _buildMenuItem(
+                        icon: Icons.security_outlined,
+                        title: 'Security',
+                        subtitle: 'Password and authentication',
+                        onTap: () {},
+                      ),
+                      _buildMenuItem(
+                        icon: Icons.notifications_outlined,
+                        title: 'Notifications',
+                        subtitle: 'Manage your notifications',
+                        onTap: () {},
+                      ),
+                    ]),
+
+                    const SizedBox(height: 24),
+
+                    _buildMenuSection('Bookings', [
+                      _buildMenuItem(
+                        icon: Icons.hotel_outlined,
+                        title: 'My Bookings',
+                        subtitle: 'View all your reservations',
+                        onTap: () {},
+                      ),
+                      _buildMenuItem(
+                        icon: Icons.favorite_outline,
+                        title: 'Saved Items',
+                        subtitle: 'Your favorite destinations',
+                        onTap: () {},
+                      ),
+                      _buildMenuItem(
+                        icon: Icons.history,
+                        title: 'Booking History',
+                        subtitle: 'Past trips and stays',
+                        onTap: () {},
+                      ),
+                    ]),
+
+                    const SizedBox(height: 24),
+
+                    _buildMenuSection('Preferences', [
+                      _buildMenuItem(
+                        icon: Icons.language_outlined,
+                        title: 'Language',
+                        subtitle: _user?.preferredLanguage ?? 'English',
+                        onTap: () {},
+                      ),
+                      _buildMenuItem(
+                        icon: Icons.currency_exchange_outlined,
+                        title: 'Currency',
+                        subtitle: 'USD',
+                        onTap: () {},
+                      ),
+                      _buildMenuItem(
+                        icon: Icons.help_outline,
+                        title: 'Help & Support',
+                        subtitle: 'Get assistance',
+                        onTap: () {},
+                      ),
+                    ]),
+
+                    const SizedBox(height: 32),
+
+                    // Logout Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: _handleLogout,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.red,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(color: Colors.red.withOpacity(0.2)),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.logout, size: 20),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Log Out',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 40),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  String _getUserName() {
+    if (_user != null) {
+      return _user!.fullName;
+    } else if (_provider != null) {
+      return _provider!.businessName;
+    }
+    return 'User';
+  }
+
+  String _getUserEmail() {
+    if (_user != null) {
+      return _user!.email;
+    } else if (_provider != null) {
+      return _provider!.email;
+    }
+    return '';
+  }
+
+  String _getUserInitials() {
+    final name = _getUserName();
+    final parts = name.split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    } else if (parts.isNotEmpty) {
+      return parts[0][0].toUpperCase();
+    }
+    return 'U';
+  }
+
+  Widget _buildMenuSection(String title, List<Widget> items) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: BedbeesColors.greyText,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+          ...items,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuItem({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: BedbeesColors.primaryBlue.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: BedbeesColors.primaryBlue,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: BedbeesColors.greyText,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              size: 16,
+              color: BedbeesColors.greyText.withOpacity(0.4),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _handleLogout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          'Log Out',
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF1A1A1A),
+          ),
+        ),
+        content: const Text(
+          'Are you sure you want to log out?',
+          style: TextStyle(
+            fontSize: 15,
+            color: Color(0xFF666666),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(
+              'Cancel',
+              style: TextStyle(
+                color: BedbeesColors.greyText,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Log Out',
+              style: TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      final authService = getIt<AuthService>();
+      await authService.logout();
+      
+      if (mounted) {
+        setState(() {
+          _isAuthenticated = false;
+          _user = null;
+          _provider = null;
+          _userType = null;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Logged out successfully'),
+            backgroundColor: BedbeesColors.primaryBlue,
+          ),
+        );
+      }
+    }
   }
 
   // Show Auth Modal - Full Screen Modern Page
@@ -1271,19 +1695,67 @@ class _ModernAuthPageState extends State<_ModernAuthPage> {
       _isLoading = true;
     });
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
+    try {
+      final authService = getIt<AuthService>();
+      
+      if (_isLogin) {
+        // Login
+        final response = await authService.login(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          isProvider: false,
+        );
 
-    setState(() {
-      _isLoading = false;
-    });
+        if (!mounted) return;
 
-    // Navigate back on success
-    if (mounted) {
-      Navigator.pop(context);
+        setState(() {
+          _isLoading = false;
+        });
+
+        if (response.success) {
+          // Close the modal and reload the profile page
+          Navigator.pop(context);
+          
+          // Trigger a rebuild of the parent widget
+          if (context.findAncestorStateOfType<_ProfilePageState>() != null) {
+            context.findAncestorStateOfType<_ProfilePageState>()!._loadUserData();
+          }
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Signed in successfully!'),
+              backgroundColor: BedbeesColors.primaryBlue,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(response.message ?? 'Login failed'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } else {
+        // For signup, redirect to proper signup page
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please use the complete signup form'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      
+      setState(() {
+        _isLoading = false;
+      });
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_isLogin ? 'Signed in successfully!' : 'Account created successfully!'),
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
         ),
       );
     }

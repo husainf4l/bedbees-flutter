@@ -127,7 +127,7 @@ class _BedbeesSignupPageState extends State<BedbeesSignupPage> {
           ),
         );
 
-        // Navigate to home page
+        // Navigate to profile page
         await Future.delayed(const Duration(milliseconds: 500));
         if (!mounted) return;
         context.go('/home');
@@ -146,7 +146,7 @@ class _BedbeesSignupPageState extends State<BedbeesSignupPage> {
           ),
         );
 
-        // Navigate to home page to explore hotels and tours
+        // Navigate to profile page to explore hotels and tours
         await Future.delayed(const Duration(milliseconds: 500));
         if (!mounted) return;
         context.go('/home');
@@ -169,7 +169,7 @@ class _BedbeesSignupPageState extends State<BedbeesSignupPage> {
             ),
           );
 
-          // Navigate to home page
+          // Navigate to profile page
           await Future.delayed(const Duration(milliseconds: 500));
           if (!mounted) return;
           context.go('/home');

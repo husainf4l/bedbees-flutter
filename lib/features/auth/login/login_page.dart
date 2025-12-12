@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       if (!mounted) return;
 
       if (response.success) {
-        context.go(widget.isProvider ? '/provider/dashboard' : '/dashboard');
+        context.go(widget.isProvider ? '/provider/dashboard' : '/profile');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
