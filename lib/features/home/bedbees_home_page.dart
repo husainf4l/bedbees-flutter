@@ -7,7 +7,7 @@ import '../../core/widgets/bedbees_components.dart';
 import '../../services/auth/auth_service.dart';
 import '../explore/explore_page.dart';
 import '../saved/saved_page.dart';
-import '../profile/profile_page_new.dart';
+import '../profile/profile_page.dart';
 import '../hotels/hotels_page.dart';
 import '../apartments/apartments_page.dart';
 import '../car_rental/car_rental_page.dart';
@@ -1166,151 +1166,157 @@ class _BedbeesHomePageState extends State<BedbeesHomePage> {
   // ============================================
   // ENHANCED BOTTOM NAVIGATION - Blue Active
   // ============================================
+  // ============================================
+  // MODERN iOS-STYLE BOTTOM NAVIGATION
+  // ============================================
   Widget _buildEnhancedBottomNavigation() {
     return Container(
       decoration: BoxDecoration(
-        color: BedbeesColors.white,
+        color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: BedbeesColors.darkText.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 24,
+            offset: const Offset(0, -2),
+            spreadRadius: 0,
           ),
         ],
         borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(24),
+          top: Radius.circular(20),
         ),
       ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.vertical(
-          top: Radius.circular(24),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedTab,
-          onTap: (index) {
-            setState(() {
-              _selectedTab = index;
-            });
-          },
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          type: BottomNavigationBarType.fixed,
-          selectedItemColor: BedbeesColors.primaryBlue,
-          unselectedItemColor: BedbeesColors.greyText,
-          selectedLabelStyle: BedbeesTextStyles.caption.copyWith(
-            fontWeight: FontWeight.w700,
-            fontSize: 11,
-          ),
-          unselectedLabelStyle: BedbeesTextStyles.caption.copyWith(
-            fontSize: 11,
-          ),
-          selectedFontSize: 11,
-          unselectedFontSize: 11,
-          items: [
-            BottomNavigationBarItem(
-              icon: _buildNavIcon(Icons.home_outlined, 0),
-              activeIcon: _buildActiveNavIcon(Icons.home_rounded, 0),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildNavIcon(Icons.explore_outlined, 1),
-              activeIcon: _buildActiveNavIcon(Icons.explore_rounded, 1),
-              label: 'Explore',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildNavIcon(Icons.bookmark_border_rounded, 2),
-              activeIcon: _buildActiveNavIcon(Icons.bookmark_rounded, 2),
-              label: 'Saved',
-            ),
-            BottomNavigationBarItem(
-              icon: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  _buildNavIcon(Icons.favorite_border_rounded, 3),
-                  Positioned(
-                    right: 4,
-                    top: 4,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: BedbeesColors.coral,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
-                      ),
-                      child: const Text(
-                        '3',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
+      child: SafeArea(
+        top: false,
+        child: Container(
+          height: 80,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildModernNavItem(
+                icon: Icons.home_rounded,
+                label: 'Home',
+                index: 0,
               ),
-              activeIcon: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  _buildActiveNavIcon(Icons.favorite_rounded, 3),
-                  Positioned(
-                    right: 8,
-                    top: 4,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: BedbeesColors.coral,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(
-                        minWidth: 16,
-                        minHeight: 16,
-                      ),
-                      child: const Text(
-                        '3',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 9,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ),
-                ],
+              _buildModernNavItem(
+                icon: Icons.explore_rounded,
+                label: 'Explore',
+                index: 1,
               ),
-              label: 'Wishlist',
-            ),
-            BottomNavigationBarItem(
-              icon: _buildNavIcon(Icons.person_outline_rounded, 4),
-              activeIcon: _buildActiveNavIcon(Icons.person_rounded, 4),
-              label: 'Profile',
-            ),
-          ],
+              _buildModernNavItem(
+                icon: Icons.bookmark_rounded,
+                label: 'Saved',
+                index: 2,
+              ),
+              _buildModernNavItem(
+                icon: Icons.favorite_rounded,
+                label: 'Wishlist',
+                index: 3,
+                showBadge: true,
+                badgeCount: 3,
+              ),
+              _buildModernNavItem(
+                icon: Icons.person_rounded,
+                label: 'Profile',
+                index: 4,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildNavIcon(IconData icon, int index) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      child: Icon(icon, size: 24),
-    );
-  }
+  Widget _buildModernNavItem({
+    required IconData icon,
+    required String label,
+    required int index,
+    bool showBadge = false,
+    int badgeCount = 0,
+  }) {
+    final isActive = _selectedTab == index;
 
-  Widget _buildActiveNavIcon(IconData icon, int index) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: BedbeesColors.primaryBlue.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedTab = index;
+          });
+        },
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Icon with badge
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 1.0, end: isActive ? 1.0 : 1.0),
+                    duration: const Duration(milliseconds: 200),
+                    builder: (context, scale, child) {
+                      return Transform.scale(
+                        scale: scale,
+                        child: Icon(
+                          icon,
+                          size: 24,
+                          color: isActive
+                              ? BedbeesColors.primaryBlue
+                              : BedbeesColors.greyText.withOpacity(0.6),
+                        ),
+                      );
+                    },
+                  ),
+                  if (showBadge && badgeCount > 0)
+                    Positioned(
+                      right: -4,
+                      top: -4,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: BedbeesColors.coral,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 1.5,
+                          ),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          badgeCount.toString(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              // Label text
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                  color: isActive
+                      ? BedbeesColors.primaryBlue
+                      : BedbeesColors.greyText.withOpacity(0.8),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      child: Icon(icon, size: 24),
     );
   }
 
